@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — Mohamed Farah</title>
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="shared.css">
+<style>
+body { background: #fff; color: #0a0a0a; padding-top: 56px; }
+
+.wrap { max-width: 1080px; margin: 0 auto; padding: 96px 56px 120px; }
+
+/* BIO */
+.bio-block { max-width: 720px; margin-bottom: 96px; padding-bottom: 96px; border-bottom: 1px solid #ececec; }
+
+.bio-kicker {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 12px; font-weight: 550; letter-spacing: 0.05em;
+  text-transform: uppercase; color: #999; margin-bottom: 28px;
+}
+.bio-kicker::before { content: ''; width: 24px; height: 1px; background: #999; }
+
+.bio-name {
+  font-size: clamp(48px, 7vw, 80px);
+  font-weight: 720; letter-spacing: -0.045em;
+  line-height: 0.98; margin-bottom: 24px;
+}
+.bio-name .light { font-weight: 280; color: #ccc; }
+
+.bio-title {
+  font-size: 16px; font-weight: 400;
+  color: #888; letter-spacing: -0.005em; margin-bottom: 36px;
+}
+
+.bio-text {
+  font-size: 18px; font-weight: 400;
+  line-height: 1.7; color: #444; letter-spacing: -0.012em;
+}
+.bio-text p + p { margin-top: 18px; }
+.bio-text strong { color: #0a0a0a; font-weight: 550; }
+
+/* TWO COL */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; margin-bottom: 96px; padding-bottom: 96px; border-bottom: 1px solid #ececec; }
+
+.sh { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #bbb; margin-bottom: 28px; }
+
+/* SKILL LIST */
+.skill-list { list-style: none; }
+.skill-list li {
+  font-size: 14px; font-weight: 450; color: #444;
+  padding: 14px 0; border-bottom: 1px solid #f0f0f0;
+  display: flex; justify-content: space-between; align-items: center;
+  letter-spacing: -0.005em; transition: color 0.15s;
+}
+.skill-list li:last-child { border-bottom: none; }
+.skill-list li:hover { color: #0a0a0a; }
+.skill-cat { font-size: 11px; font-weight: 500; color: #bbb; }
+
+/* EXP */
+.exp-item { padding: 20px 0; border-bottom: 1px solid #f0f0f0; }
+.exp-item:last-child { border-bottom: none; }
+.exp-row { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 4px; }
+.exp-role { font-size: 15px; font-weight: 650; color: #0a0a0a; letter-spacing: -0.01em; }
+.exp-dates { font-size: 11px; font-weight: 450; color: #bbb; white-space: nowrap; }
+.exp-org { font-size: 13px; font-weight: 500; color: #e03e1a; letter-spacing: -0.005em; margin-bottom: 6px; }
+.exp-desc { font-size: 13px; font-weight: 400; color: #888; line-height: 1.65; letter-spacing: -0.003em; }
+
+/* EDU */
+.edu-block { margin-bottom: 96px; padding-bottom: 96px; border-bottom: 1px solid #ececec; }
+.edu-card { background: #fafafa; border: 1px solid #ececec; border-radius: 12px; padding: 32px; max-width: 480px; }
+.edu-school { font-size: 22px; font-weight: 700; letter-spacing: -0.025em; margin-bottom: 6px; }
+.edu-degree { font-size: 14px; font-weight: 450; color: #555; margin-bottom: 4px; letter-spacing: -0.005em; }
+.edu-year { font-size: 12px; color: #999; }
+.edu-badge { display: inline-block; font-size: 10px; font-weight: 600; background: #0a0a0a; color: #fff; padding: 5px 12px; margin-top: 16px; border-radius: 4px; letter-spacing: 0.04em; text-transform: uppercase; }
+
+/* PROJECTS */
+.proj-mini { margin-bottom: 96px; padding-bottom: 96px; border-bottom: 1px solid #ececec; }
+.proj-mini-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; background: #ececec; border: 1px solid #ececec; border-radius: 12px; overflow: hidden; }
+.pmini { background: #fff; padding: 28px; text-decoration: none; display: block; transition: background 0.15s; position: relative; }
+.pmini:hover { background: #fafafa; }
+.pmini:hover .pmini-arrow { color: #0a0a0a; transform: translateX(4px); }
+.pmini-num { font-size: 11px; font-weight: 600; color: #bbb; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 14px; }
+.pmini-title { font-size: 16px; font-weight: 650; color: #0a0a0a; letter-spacing: -0.015em; line-height: 1.25; margin-bottom: 8px; }
+.pmini-sub { font-size: 12px; font-weight: 400; color: #888; line-height: 1.55; margin-bottom: 18px; letter-spacing: -0.003em; }
+.pmini-arrow { font-size: 16px; color: #ddd; transition: color 0.15s, transform 0.15s; display: inline-block; }
+
+/* CONTACT */
+.contact-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.contact-card {
+  border: 1px solid #ececec; border-radius: 8px; padding: 24px;
+  text-decoration: none; display: block;
+  transition: all 0.2s;
+}
+.contact-card:hover { border-color: #0a0a0a; background: #fafafa; transform: translateY(-2px); }
+.contact-card:hover .cc-arrow { color: #0a0a0a; transform: translateX(4px); }
+.cc-label { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #bbb; margin-bottom: 10px; }
+.cc-val { font-size: 14px; font-weight: 550; color: #0a0a0a; letter-spacing: -0.01em; margin-bottom: 16px; }
+.cc-arrow { font-size: 16px; color: #ddd; transition: color 0.15s, transform 0.15s; display: inline-block; }
+
+@media(max-width:720px){
+  .wrap{padding-left:24px;padding-right:24px;}
+  .two-col,.proj-mini-grid,.contact-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <a href="index.html" class="nav-logo">Mohamed Farah<span class="dot">.</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="project1.html">Health Access</a></li>
+    <li><a href="project2.html">Mental Health</a></li>
+    <li><a href="project3.html">Food Deserts</a></li>
+    <li><a href="about.html" class="active">About</a></li>
+  </ul>
+</nav>
+
+<div class="wrap">
+
+  <div class="bio-block">
+    <div class="bio-kicker">About</div>
+    <h1 class="bio-name">Mohamed<br><span class="light">Farah.</span></h1>
+    <div class="bio-title">B.S. Informatics · University of Washington · Class of 2026</div>
+    <div class="bio-text">
+      <p>I'm a UW Informatics student focused on <strong>product thinking, local data analytics, and information systems</strong>. This portfolio shows things that I care about within my own community — exploring experiences with navigation systems that weren't built with them in mind.</p>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <div class="sh">Skills</div>
+      <ul class="skill-list">
+        <li>SQL <span class="skill-cat">Data</span></li>
+        <li>Python <span class="skill-cat">Data / Scripting</span></li>
+        <li>JavaScript <span class="skill-cat">Frontend</span></li>
+        <li>R <span class="skill-cat">Analysis</span></li>
+        <li>Figma <span class="skill-cat">Design</span></li>
+        <li>Segment <span class="skill-cat">CDP / Analytics</span></li>
+        <li>Amperity <span class="skill-cat">Data Platform</span></li>
+        <li>Jira <span class="skill-cat">Project Mgmt</span></li>
+        <li>Miro <span class="skill-cat">Collaboration</span></li>
+        <li>Unity <span class="skill-cat">Game Dev</span></li>
+      </ul>
+    </div>
+    <div>
+      <div class="sh">Experience</div>
+      <div class="exp-item">
+        <div class="exp-row"><span class="exp-role">Sales Administrator</span><span class="exp-dates">Sep 2021 – Jan 2023</span></div>
+        <div class="exp-org">Amal Auto LLC · Federal Way, WA</div>
+        <div class="exp-desc">Managed inventory database in Frazer, handled client communications and logistics, and demonstrated consistent sales success through tailored customer solutions and negotiation.</div>
+      </div>
+      <div class="exp-item">
+        <div class="exp-row"><span class="exp-role">Treasurer</span><span class="exp-dates">Sep 2024 – Feb 2025</span></div>
+        <div class="exp-org">Somali Student Association · UW Seattle</div>
+        <div class="exp-desc">Led fundraising, managed event budgets, and coordinated inclusive planning for the Somali student community at UW.</div>
+      </div>
+      <div class="exp-item">
+        <div class="exp-row"><span class="exp-role">Capstone Lead — Habit Hero</span><span class="exp-dates">2024–2025</span></div>
+        <div class="exp-org">UW Informatics Capstone</div>
+        <div class="exp-desc">Led product management and UX design for an ADHD-focused RPG mobile game. Conducted user research, built Figma prototypes, defined MVP scope and roadmap.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="edu-block">
+    <div class="sh">Education</div>
+    <div class="edu-card">
+      <div class="edu-school">University of Washington</div>
+      <div class="edu-degree">B.S. Informatics · Seattle, WA</div>
+      <div class="edu-year">January 2023 – June 2026</div>
+    </div>
+  </div>
+
+  <div class="proj-mini">
+    <div class="sh">Portfolio projects</div>
+    <div class="proj-mini-grid">
+      <a href="project1.html" class="pmini">
+        <div class="pmini-num">01</div>
+        <div class="pmini-title">Health Access in Census Areas</div>
+        <div class="pmini-sub">Clinic gaps and uninsured rates across KC immigrant communities. Live Census API.</div>
+        <div class="pmini-arrow">→</div>
+      </a>
+      <a href="project2.html" class="pmini">
+        <div class="pmini-num">02</div>
+        <div class="pmini-title">Mental Health Deserts</div>
+        <div class="pmini-sub">Behavioral health provider scarcity mapped against poverty and need. Live CDC API.</div>
+        <div class="pmini-arrow">→</div>
+      </a>
+      <a href="project3.html" class="pmini">
+        <div class="pmini-num">03</div>
+        <div class="pmini-title">Food Deserts & Health</div>
+        <div class="pmini-sub">Grocery access gaps connected to diabetes and obesity outcomes. Interactive comparison.</div>
+        <div class="pmini-arrow">→</div>
+      </a>
+    </div>
+  </div>
+
+  <div>
+    <div class="sh">Contact</div>
+    <div class="contact-grid">
+      <a href="mailto:mofar6@uw.edu" class="contact-card">
+        <div class="cc-label">Email</div>
+        <div class="cc-val">mofar6@uw.edu</div>
+        <div class="cc-arrow">→</div>
+      </a>
+      <a href="https://linkedin.com/in/mofar6" target="_blank" class="contact-card">
+        <div class="cc-label">LinkedIn</div>
+        <div class="cc-val">linkedin.com/in/mofar6</div>
+        <div class="cc-arrow">→</div>
+      </a>
+      <a href="tel:2068833567" class="contact-card">
+        <div class="cc-label">Phone</div>
+        <div class="cc-val">(206) 883-3567</div>
+        <div class="cc-arrow">→</div>
+      </a>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
