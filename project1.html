@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Health Access in Census Areas — Mohamed Farah</title>
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="shared.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --red: #c8391c;
+  --blue: #1a5c8a;
+  --green: #2a5e28;
+  --amber: #9a6010;
+  --rule: #ececec;
+  --rule2: #e0e0e0;
+  --bg: #fff;
+  --bg2: #fafafa;
+  --bg3: #f5f5f3;
+  --ink: #0a0a0a;
+  --muted: #555;
+  --soft: #888;
+  --dim: #bbb;
+}
+
+body { background: var(--bg); color: var(--ink); padding-top: 56px; }
+
+/* ─── PAGE TITLE ─── */
+.page-title-block {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 88px 56px 56px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.ptb-num {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 12px; font-weight: 550; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--dim); margin-bottom: 24px;
+}
+.ptb-num::before { content: '01 / 03'; color: var(--red); font-weight: 600; }
+.ptb-num::after { content: '·'; color: var(--dim); }
+
+.ptb-title {
+  font-size: clamp(36px, 5.5vw, 68px); font-weight: 720;
+  letter-spacing: -0.04em; line-height: 1.02;
+  color: var(--ink); margin-bottom: 20px;
+}
+
+.ptb-sub {
+  font-size: 17px; font-weight: 400; line-height: 1.6;
+  color: var(--muted); max-width: 600px; letter-spacing: -0.012em;
+}
+
+.ptb-meta {
+  display: flex; gap: 48px; margin-top: 40px;
+  padding-top: 32px; border-top: 1px solid var(--rule); flex-wrap: wrap;
+}
+.mi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
+.mi-val { font-size: 13px; font-weight: 450; color: var(--muted); letter-spacing: -0.005em; }
+
+.main { max-width: 1080px; margin: 0 auto; padding: 56px 56px 96px; }
+
+/* ─── LIVE BADGE ─── */
+.live-row { display: flex; align-items: center; gap: 8px; margin-bottom: 24px; }
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; animation: pulseDot 2s ease-in-out infinite; }
+@keyframes pulseDot { 0%,100%{opacity:1; transform:scale(1);} 50%{opacity:0.5; transform:scale(1.15);} }
+.live-text { font-size: 11px; font-weight: 600; color: #22c55e; letter-spacing: 0.06em; text-transform: uppercase; }
+
+/* ─── LIVE PANEL ─── */
+.live-panel {
+  background: linear-gradient(180deg, #fafafa 0%, #fff 100%);
+  border: 1px solid var(--rule); border-radius: 12px;
+  padding: 32px; margin-bottom: 64px;
+}
+.live-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 32px; }
+.lp-val { font-size: 44px; font-weight: 720; letter-spacing: -0.04em; color: var(--ink); line-height: 1; margin-bottom: 8px; font-variant-numeric: tabular-nums; }
+.lp-val .skel { display: inline-block; width: 60px; height: 32px; background: linear-gradient(90deg, #f0f0f0 0%, #f8f8f8 50%, #f0f0f0 100%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 4px; }
+@keyframes shimmer { 0%{background-position:200% 0;} 100%{background-position:-200% 0;} }
+.lp-label { font-size: 12px; font-weight: 450; color: var(--soft); line-height: 1.5; letter-spacing: -0.005em; }
+.lp-source { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--rule); font-size: 11px; color: var(--dim); display: flex; align-items: center; gap: 6px; }
+.lp-source::before { content: '⟳'; }
+
+/* ─── STAT STRIP ─── */
+.stat-strip {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 1px; background: var(--rule); border: 1px solid var(--rule);
+  border-radius: 12px; overflow: hidden; margin-bottom: 64px;
+}
+.stat { background: var(--bg); padding: 28px 24px; transition: background 0.15s; }
+.stat:hover { background: var(--bg2); }
+.stat-label { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dim); margin-bottom: 10px; }
+.stat-val { font-size: 44px; font-weight: 720; letter-spacing: -0.04em; line-height: 1; margin-bottom: 6px; font-variant-numeric: tabular-nums; }
+.stat-val.r { color: var(--red); }
+.stat-val.b { color: var(--blue); }
+.stat-val.g { color: var(--green); }
+.stat-note { font-size: 11px; color: var(--dim); line-height: 1.5; }
+
+/* ─── SECTION HEADER ─── */
+.sh {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--dim);
+  margin-bottom: 24px; padding-bottom: 14px; border-bottom: 1px solid var(--rule);
+  display: flex; justify-content: space-between; align-items: baseline;
+}
+.sh-side { color: var(--soft); font-weight: 450; letter-spacing: 0; text-transform: none; }
+
+/* ─── METHODOLOGY ─── */
+.methodology {
+  background: var(--bg3); border-radius: 12px;
+  padding: 40px; margin-bottom: 64px; border: 1px solid var(--rule);
+}
+.method-title {
+  font-size: 22px; font-weight: 650; letter-spacing: -0.02em;
+  color: var(--ink); margin-bottom: 8px;
+}
+.method-sub {
+  font-size: 14px; font-weight: 400; color: var(--muted);
+  margin-bottom: 32px; letter-spacing: -0.005em;
+}
+.method-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.method-step {
+  background: var(--bg); border: 1px solid var(--rule);
+  border-radius: 8px; padding: 20px; position: relative;
+}
+.ms-num {
+  position: absolute; top: 18px; right: 20px;
+  font-size: 11px; font-weight: 600; color: var(--dim);
+  font-variant-numeric: tabular-nums;
+}
+.ms-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: var(--bg3); display: flex; align-items: center; justify-content: center;
+  margin-bottom: 16px; font-size: 16px;
+}
+.ms-title { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 4px; letter-spacing: -0.005em; }
+.ms-desc { font-size: 12px; font-weight: 400; color: var(--soft); line-height: 1.55; letter-spacing: -0.003em; }
+
+/* ─── INTERACTIVE ZIP SEARCH ─── */
+.zip-tool {
+  background: var(--ink); color: #fff;
+  border-radius: 12px; padding: 36px; margin-bottom: 64px;
+  position: relative; overflow: hidden;
+}
+.zip-tool::before {
+  content: ''; position: absolute;
+  top: -100px; right: -100px;
+  width: 300px; height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(224,62,26,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+.zip-tool-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 12px; }
+.zip-tool-title { font-size: 24px; font-weight: 650; color: #fff; letter-spacing: -0.025em; margin-bottom: 8px; }
+.zip-tool-desc { font-size: 14px; color: rgba(255,255,255,0.55); margin-bottom: 28px; max-width: 480px; line-height: 1.6; letter-spacing: -0.005em; }
+.zip-input-row { display: flex; gap: 10px; margin-bottom: 24px; max-width: 400px; position: relative; z-index: 1; }
+.zip-input {
+  flex: 1; background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #fff; padding: 12px 16px; border-radius: 8px;
+  font-family: inherit; font-size: 14px; font-weight: 450;
+  letter-spacing: -0.005em; transition: all 0.2s;
+}
+.zip-input:focus { outline: none; background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.3); }
+.zip-input::placeholder { color: rgba(255,255,255,0.35); }
+.zip-btn {
+  background: #fff; color: var(--ink);
+  border: none; padding: 12px 20px; border-radius: 8px;
+  font-family: inherit; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s; letter-spacing: -0.005em;
+}
+.zip-btn:hover { background: #e03e1a; color: #fff; }
+.zip-result {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px; padding: 20px;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+  position: relative; z-index: 1;
+}
+.zr-item { }
+.zr-label { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 6px; }
+.zr-val { font-size: 22px; font-weight: 700; color: #fff; letter-spacing: -0.02em; line-height: 1; margin-bottom: 4px; font-variant-numeric: tabular-nums; }
+.zr-sub { font-size: 11px; color: rgba(255,255,255,0.4); }
+.zip-suggestions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 14px; }
+.zip-chip {
+  font-size: 11px; padding: 4px 10px;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.7); border-radius: 4px; cursor: pointer;
+  transition: all 0.15s; font-family: inherit;
+}
+.zip-chip:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+/* ─── TWO COL ─── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; margin-bottom: 64px; }
+
+/* ─── MAP ─── */
+.map-box { background: var(--bg2); border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; height: 320px; }
+.map-box svg { width: 100%; height: 100%; }
+.map-caption { font-size: 11px; color: var(--dim); margin-top: 12px; line-height: 1.6; letter-spacing: -0.003em; font-style: italic; }
+
+/* ─── CHART ─── */
+.chart-wrap { height: 360px; position: relative; }
+
+/* ─── FINDINGS ─── */
+.findings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 64px; }
+.finding-card {
+  background: var(--bg); border: 1px solid var(--rule);
+  border-radius: 8px; padding: 24px;
+  border-left: 3px solid var(--rule2);
+  transition: all 0.2s;
+}
+.finding-card:hover { border-left-color: var(--red); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.04); }
+.finding-card.r { border-left-color: var(--red); }
+.finding-card.b { border-left-color: var(--blue); }
+.finding-card.g { border-left-color: var(--green); }
+.finding-card.a { border-left-color: var(--amber); }
+.fc-num { font-size: 11px; font-weight: 600; color: var(--dim); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 12px; }
+.fc-head { font-size: 16px; font-weight: 650; color: var(--ink); letter-spacing: -0.015em; margin-bottom: 8px; line-height: 1.3; }
+.fc-body { font-size: 13px; font-weight: 400; color: var(--muted); line-height: 1.6; letter-spacing: -0.003em; }
+
+/* ─── REC GRID ─── */
+.rec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.rec {
+  border: 1px solid var(--rule); border-radius: 8px;
+  padding: 24px; background: var(--bg);
+  transition: all 0.2s;
+}
+.rec:hover { background: var(--bg2); border-color: var(--ink); }
+.rec-n { font-size: 11px; font-weight: 600; color: var(--red); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 12px; }
+.rec-h { font-size: 15px; font-weight: 650; color: var(--ink); letter-spacing: -0.015em; margin-bottom: 8px; }
+.rec-b { font-size: 13px; font-weight: 400; color: var(--muted); line-height: 1.6; letter-spacing: -0.003em; }
+
+/* ─── PAGE NAV ─── */
+.page-nav {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 32px 0 0; border-top: 1px solid var(--rule); margin-top: 64px;
+}
+.page-nav a {
+  font-size: 13px; font-weight: 550; color: var(--muted);
+  text-decoration: none; letter-spacing: -0.005em; transition: color 0.15s;
+}
+.page-nav a:hover { color: var(--red); }
+.page-nav-src { font-size: 11px; color: var(--dim); max-width: 380px; line-height: 1.5; text-align: center; }
+
+@media(max-width:720px){
+  .page-title-block,.main{padding-left:24px;padding-right:24px;}
+  .stat-strip,.live-grid,.method-steps,.zip-result,.two-col,.findings-grid,.rec-grid{grid-template-columns:1fr;}
+  .live-grid,.zip-result{gap:20px;}
+  .method-steps{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <a href="index.html" class="nav-logo">Mohamed Farah<span class="dot">.</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="project1.html" class="active">Health Access</a></li>
+    <li><a href="project2.html">Mental Health</a></li>
+    <li><a href="project3.html">Food Deserts</a></li>
+    <li><a href="about.html">About</a></li>
+  </ul>
+</nav>
+
+<div class="page-title-block">
+  <div class="ptb-num">King County, WA</div>
+  <h1 class="ptb-title">Health Access in<br>Census-Designated Areas</h1>
+  <p class="ptb-sub">Analyzing healthcare resource distribution, uninsured rates, and clinic access gaps across King County's immigrant and refugee communities using census tract data and live federal APIs.</p>
+  <div class="ptb-meta">
+    <div><div class="mi-label">Source</div><div class="mi-val">KC Community Health Needs Assessment</div></div>
+    <div><div class="mi-label">Year</div><div class="mi-val">2024–2026</div></div>
+    <div><div class="mi-label">Tools</div><div class="mi-val">JavaScript · Chart.js · Census API</div></div>
+    <div><div class="mi-label">Status</div><div class="mi-val">Live · Updated annually</div></div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- METHODOLOGY -->
+  <div class="methodology">
+    <div class="method-title">Methodology</div>
+    <div class="method-sub">How this analysis was constructed, from data collection to insight.</div>
+    <div class="method-steps">
+      <div class="method-step">
+        <div class="ms-num">01</div>
+        <div class="ms-icon">◇</div>
+        <div class="ms-title">Define the question</div>
+        <div class="ms-desc">Where does healthcare access break down for King County's immigrant communities, and what's the IS gap behind it?</div>
+      </div>
+      <div class="method-step">
+        <div class="ms-num">02</div>
+        <div class="ms-icon">◈</div>
+        <div class="ms-title">Pull live data</div>
+        <div class="ms-desc">Census Bureau ACS API for demographic and insurance data; KC Community Health Needs Assessment for clinic distribution.</div>
+      </div>
+      <div class="method-step">
+        <div class="ms-num">03</div>
+        <div class="ms-icon">◉</div>
+        <div class="ms-title">Cross-reference</div>
+        <div class="ms-desc">Map clinic locations against census tract demographics, language preference data, and refugee resettlement patterns.</div>
+      </div>
+      <div class="method-step">
+        <div class="ms-num">04</div>
+        <div class="ms-icon">◆</div>
+        <div class="ms-title">Translate to action</div>
+        <div class="ms-desc">Convert findings into IS-driven interventions a hospital network or county dept could realistically implement.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIVE -->
+  <div class="live-row">
+    <div class="live-dot"></div>
+    <span class="live-text">Live · US Census Bureau API</span>
+  </div>
+
+  <div class="live-panel">
+    <div class="live-grid">
+      <div>
+        <div class="lp-val" id="uninsured-rate"><span class="skel"></span></div>
+        <div class="lp-label">Uninsured adults<br>Washington State</div>
+      </div>
+      <div>
+        <div class="lp-val" id="poverty-rate"><span class="skel"></span></div>
+        <div class="lp-label">Below poverty line<br>Washington State</div>
+      </div>
+      <div>
+        <div class="lp-val" id="foreign-born"><span class="skel"></span></div>
+        <div class="lp-label">Foreign-born residents<br>Washington State</div>
+      </div>
+    </div>
+    <div class="lp-source" id="live-status">Fetching from US Census Bureau ACS API…</div>
+  </div>
+
+  <!-- INTERACTIVE ZIP TOOL -->
+  <div class="zip-tool">
+    <div class="zip-tool-label">Interactive · Try it</div>
+    <div class="zip-tool-title">King County zip code explorer</div>
+    <div class="zip-tool-desc">Enter a King County zip code to see uninsured rate, clinic count, and access status. Demonstrates how a real IS dashboard could surface these metrics for clinical leadership.</div>
+    <div class="zip-input-row">
+      <input class="zip-input" id="zip-input" type="text" placeholder="Enter zip code (e.g. 98003)" maxlength="5">
+      <button class="zip-btn" id="zip-go">Search</button>
+    </div>
+    <div class="zip-suggestions">
+      <button class="zip-chip" data-zip="98003">98003 Federal Way</button>
+      <button class="zip-chip" data-zip="98188">98188 Tukwila</button>
+      <button class="zip-chip" data-zip="98118">98118 Rainier Valley</button>
+      <button class="zip-chip" data-zip="98125">98125 Northgate</button>
+      <button class="zip-chip" data-zip="98004">98004 Bellevue</button>
+    </div>
+    <div class="zip-result">
+      <div class="zr-item">
+        <div class="zr-label">Neighborhood</div>
+        <div class="zr-val" id="zr-name" style="font-size:18px;">—</div>
+        <div class="zr-sub" id="zr-pop">—</div>
+      </div>
+      <div class="zr-item">
+        <div class="zr-label">Uninsured</div>
+        <div class="zr-val" id="zr-uninsured">—</div>
+        <div class="zr-sub">vs. 8% county avg</div>
+      </div>
+      <div class="zr-item">
+        <div class="zr-label">Clinics</div>
+        <div class="zr-val" id="zr-clinics">—</div>
+        <div class="zr-sub">Refugee-serving</div>
+      </div>
+      <div class="zr-item">
+        <div class="zr-label">Status</div>
+        <div class="zr-val" id="zr-status" style="font-size:16px;">—</div>
+        <div class="zr-sub" id="zr-status-sub">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stat-strip">
+    <div class="stat"><div class="stat-label">KC Population</div><div class="stat-val">2.3M</div><div class="stat-note">7th largest US county</div></div>
+    <div class="stat"><div class="stat-label">Foreign-born</div><div class="stat-val b">22%</div><div class="stat-note">~500,000 individuals</div></div>
+    <div class="stat"><div class="stat-label">Uninsured (gap zones)</div><div class="stat-val r">31%</div><div class="stat-note">vs. 8% county avg</div></div>
+    <div class="stat"><div class="stat-label">Refugee clinics</div><div class="stat-val g">14</div><div class="stat-note">Only 4 with Somali support</div></div>
+  </div>
+
+  <!-- MAP + CHART -->
+  <div class="two-col">
+    <div>
+      <div class="sh">Geographic coverage<span class="sh-side">King County</span></div>
+      <div class="map-box">
+        <svg viewBox="0 0 420 320" xmlns="http://www.w3.org/2000/svg">
+          <rect width="420" height="320" fill="#fafafa"/>
+          <path d="M0,82 Q26,64 36,104 Q46,140 26,164 Q8,182 0,170Z" fill="#dde8f0" opacity="0.7"/>
+          <path d="M368,0 Q420,28 420,100 Q394,118 372,106 Q348,92 360,58Z" fill="#dde8f0" opacity="0.7"/>
+          <polygon points="68,210 194,202 204,318 48,318" fill="#c8391c" opacity="0.09" stroke="#c8391c" stroke-width="1"/>
+          <polygon points="192,148 258,142 266,210 194,216" fill="#9a6010" opacity="0.1" stroke="#9a6010" stroke-width="0.8"/>
+          <polygon points="224,92 288,86 292,148 226,154" fill="#9a6010" opacity="0.08" stroke="#9a6010" stroke-width="0.8"/>
+          <polygon points="178,46 268,41 272,100 182,106" fill="#2a5e28" opacity="0.1" stroke="#2a5e28" stroke-width="0.8"/>
+          <polygon points="294,76 370,70 374,150 298,156" fill="#1a5c8a" opacity="0.09" stroke="#1a5c8a" stroke-width="0.8"/>
+          <line x1="223" y1="68" x2="223" y2="82" stroke="#2a5e28" stroke-width="1.5"/>
+          <line x1="216" y1="75" x2="230" y2="75" stroke="#2a5e28" stroke-width="1.5"/>
+          <circle cx="223" cy="75" r="10" fill="none" stroke="#2a5e28" stroke-width="1"/>
+          <line x1="222" y1="180" x2="222" y2="194" stroke="#1a5c8a" stroke-width="1.5"/>
+          <line x1="215" y1="187" x2="229" y2="187" stroke="#1a5c8a" stroke-width="1.5"/>
+          <circle cx="222" cy="187" r="10" fill="none" stroke="#1a5c8a" stroke-width="1"/>
+          <line x1="120" y1="262" x2="132" y2="274" stroke="#c8391c" stroke-width="2"/>
+          <line x1="132" y1="262" x2="120" y2="274" stroke="#c8391c" stroke-width="2"/>
+          <circle cx="126" cy="268" r="13" fill="none" stroke="#c8391c" stroke-width="1" stroke-dasharray="3,2"/>
+          <circle cx="332" cy="110" r="8" fill="none" stroke="#2a5e28" stroke-width="1"/>
+          <line x1="332" y1="103" x2="332" y2="117" stroke="#2a5e28" stroke-width="1.5"/>
+          <line x1="325" y1="110" x2="339" y2="110" stroke="#2a5e28" stroke-width="1.5"/>
+          <text x="238" y="70" fill="#2a5e28" font-size="10" font-family="Inter,sans-serif" font-weight="500">Northgate</text>
+          <text x="237" y="183" fill="#1a5c8a" font-size="10" font-family="Inter,sans-serif" font-weight="500">Rainier Valley</text>
+          <text x="142" y="270" fill="#c8391c" font-size="10" font-family="Inter,sans-serif" font-weight="500">Federal Way ✕</text>
+          <text x="6" y="216" fill="#aac0cc" font-size="9" font-family="Inter,sans-serif">Puget Sound</text>
+          <text x="346" y="46" fill="#aac0cc" font-size="9" font-family="Inter,sans-serif">Lake Wash.</text>
+          <rect x="6" y="6" width="118" height="60" fill="#fff" stroke="#ececec" stroke-width="0.5" rx="4"/>
+          <rect x="12" y="14" width="9" height="9" fill="#2a5e28" opacity="0.2" stroke="#2a5e28" stroke-width="0.8"/>
+          <text x="26" y="22" fill="#0a0a0a" font-size="9" font-family="Inter,sans-serif">Good access</text>
+          <rect x="12" y="28" width="9" height="9" fill="#9a6010" opacity="0.2" stroke="#9a6010" stroke-width="0.8"/>
+          <text x="26" y="36" fill="#0a0a0a" font-size="9" font-family="Inter,sans-serif">Limited access</text>
+          <rect x="12" y="42" width="9" height="9" fill="#c8391c" opacity="0.2" stroke="#c8391c" stroke-width="0.8"/>
+          <text x="26" y="50" fill="#0a0a0a" font-size="9" font-family="Inter,sans-serif">Critical gap</text>
+          <text x="12" y="62" fill="#bbb" font-size="8" font-family="Inter,sans-serif">+ clinic   ✕ desert zone</text>
+        </svg>
+      </div>
+      <p class="map-caption">fig. 1 — Clinic distribution across census tracts. Federal Way identified as critical gap zone with no refugee-serving clinic within 5 miles.</p>
+    </div>
+
+    <div>
+      <div class="sh">Uninsured rate by community<span class="sh-side">% of population</span></div>
+      <div class="chart-wrap">
+        <canvas id="uninsured-chart"></canvas>
+      </div>
+      <p class="map-caption">fig. 2 — All immigrant groups in KC exceed the county average of 8%. Source: KC CHNA 2024 · ACS 2022.</p>
+    </div>
+  </div>
+
+  <!-- KEY FINDINGS -->
+  <div class="sh">Key findings<span class="sh-side">04 insights</span></div>
+  <div class="findings-grid">
+    <div class="finding-card r">
+      <div class="fc-num">Finding 01</div>
+      <div class="fc-head">Federal Way is the critical gap zone</div>
+      <div class="fc-body">The highest concentration of East African and Latin American immigrants in King County has zero refugee-serving clinics within a 5-mile radius. Closest equivalent care is 12+ miles north in Rainier Valley.</div>
+    </div>
+    <div class="finding-card b">
+      <div class="fc-num">Finding 02</div>
+      <div class="fc-head">Language is the #1 access barrier</div>
+      <div class="fc-body">Only 4 of 14 refugee-serving clinics offer Somali-language support, despite Somali residents being the largest refugee group in King County with a 38% uninsured rate.</div>
+    </div>
+    <div class="finding-card g">
+      <div class="fc-num">Finding 03</div>
+      <div class="fc-head">Northgate & Rainier Valley are anchor hubs</div>
+      <div class="fc-body">These two areas have the strongest existing infrastructure. Expanding telehealth and multilingual intake from these hubs could extend coverage to surrounding underserved zip codes cost-effectively.</div>
+    </div>
+    <div class="finding-card a">
+      <div class="fc-num">Finding 04</div>
+      <div class="fc-head">Documentation fear compounds cost barriers</div>
+      <div class="fc-body">18% of surveyed immigrants cite fear of documentation requirements as a primary reason for avoiding care, even when legally eligible for Apple Health or refugee programs.</div>
+    </div>
+  </div>
+
+  <!-- RECS -->
+  <div class="sh">Recommended IS interventions<span class="sh-side">04 actions</span></div>
+  <div class="rec-grid">
+    <div class="rec"><div class="rec-n">Intervention 01</div><div class="rec-h">Multilingual digital intake</div><div class="rec-b">Deploy forms in Somali, Spanish, Vietnamese at all 14 clinics. Estimated ~40% reduction in first-visit drop-off based on similar implementations elsewhere.</div></div>
+    <div class="rec"><div class="rec-n">Intervention 02</div><div class="rec-h">Mobile clinic routes</div><div class="rec-b">Rotating 2x weekly mobile clinic in Federal Way, Tukwila, SeaTac — addresses geographic gap without capital cost of a new fixed facility.</div></div>
+    <div class="rec"><div class="rec-n">Intervention 03</div><div class="rec-h">Community health navigators</div><div class="rec-b">Train bilingual community members to bridge the documentation-fear gap and connect families to Apple Health and state refugee coverage programs.</div></div>
+    <div class="rec"><div class="rec-n">Intervention 04</div><div class="rec-h">IS utilization dashboard</div><div class="rec-b">Internal tool tracking no-shows, language requests, and zip code origins for data-driven resource allocation across the county system.</div></div>
+  </div>
+
+  <!-- LIMITATIONS -->
+  <div class="sh" style="margin-top:64px;">Limitations & next steps</div>
+  <p style="font-size:14px; color:var(--muted); line-height:1.7; max-width:700px; letter-spacing:-0.005em;">This analysis relies on aggregated state-level Census data combined with KC-specific community health surveys. Future iterations should pull individual-tract data via the Census Bureau's TIGER/Line shapefiles for higher-resolution mapping, and integrate live KC Public Health clinic capacity APIs once available. The recommendations are directional rather than prescriptive — implementation would require partnership with affected communities and validation by clinical operations leaders.</p>
+
+  <div class="page-nav">
+    <a href="index.html">← Home</a>
+    <span class="page-nav-src">KC Community Health Needs Assessment 2024 · WA OFM · DSHS Refugee Program Data · US Census Bureau ACS 2022</span>
+    <a href="project2.html">Mental Health →</a>
+  </div>
+</div>
+
+<script>
+// ─── ZIP TOOL DATA ───
+const zipData = {
+  '98003': { name: 'Federal Way', pop: '93,000', uninsured: '32%', clinics: 0, status: 'Critical gap', sub: 'No refugee clinic in zip', color: '#c8391c' },
+  '98188': { name: 'Tukwila / SeaTac', pop: '21,000', uninsured: '34%', clinics: 1, status: 'Critical gap', sub: 'Limited Somali-language', color: '#c8391c' },
+  '98118': { name: 'Rainier Valley', pop: '46,000', uninsured: '22%', clinics: 4, status: 'Limited access', sub: 'Anchor hub potential', color: '#9a6010' },
+  '98125': { name: 'Northgate', pop: '32,000', uninsured: '14%', clinics: 6, status: 'Good access', sub: 'Strong infrastructure', color: '#2a5e28' },
+  '98004': { name: 'Bellevue Core', pop: '29,000', uninsured: '6%', clinics: 8, status: 'Good access', sub: 'Above county avg', color: '#2a5e28' },
+  '98103': { name: 'Fremont / Wallingford', pop: '46,000', uninsured: '7%', clinics: 5, status: 'Good access', sub: 'Above county avg', color: '#2a5e28' },
+  '98119': { name: 'Queen Anne', pop: '24,000', uninsured: '5%', clinics: 4, status: 'Good access', sub: 'Above county avg', color: '#2a5e28' }
+};
+
+function lookupZip(zip) {
+  const data = zipData[zip];
+  if (!data) {
+    document.getElementById('zr-name').textContent = 'Not found';
+    document.getElementById('zr-pop').textContent = 'Try a KC zip code';
+    document.getElementById('zr-uninsured').textContent = '—';
+    document.getElementById('zr-clinics').textContent = '—';
+    document.getElementById('zr-status').textContent = '—';
+    document.getElementById('zr-status-sub').textContent = '—';
+    return;
+  }
+  document.getElementById('zr-name').textContent = data.name;
+  document.getElementById('zr-pop').textContent = data.pop + ' residents';
+  document.getElementById('zr-uninsured').textContent = data.uninsured;
+  document.getElementById('zr-clinics').textContent = data.clinics;
+  document.getElementById('zr-status').textContent = data.status;
+  document.getElementById('zr-status').style.color = data.color === '#c8391c' ? '#ff6b4a' : (data.color === '#9a6010' ? '#e8a838' : '#5aad72');
+  document.getElementById('zr-status-sub').textContent = data.sub;
+}
+
+document.getElementById('zip-go').addEventListener('click', () => {
+  const v = document.getElementById('zip-input').value.trim();
+  if (v) lookupZip(v);
+});
+document.getElementById('zip-input').addEventListener('keypress', e => {
+  if (e.key === 'Enter') {
+    const v = e.target.value.trim();
+    if (v) lookupZip(v);
+  }
+});
+document.querySelectorAll('.zip-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    const z = chip.getAttribute('data-zip');
+    document.getElementById('zip-input').value = z;
+    lookupZip(z);
+  });
+});
+// Default
+lookupZip('98003');
+
+// ─── CHART.JS ───
+window.addEventListener('load', () => {
+  const ctx = document.getElementById('uninsured-chart');
+  if (!ctx) return;
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Somali / E. African', 'Latin American', 'Southeast Asian', 'East Asian', 'European', 'KC Average'],
+      datasets: [{
+        label: 'Uninsured rate (%)',
+        data: [38, 34, 26, 18, 9, 8],
+        backgroundColor: ['#c8391c', '#c8391c', '#9a6010', '#1a5c8a', '#2a5e28', '#bbb'],
+        borderRadius: 4,
+        barThickness: 28
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#0a0a0a',
+          titleFont: { family: 'InterVariable', size: 12, weight: '600' },
+          bodyFont: { family: 'InterVariable', size: 12 },
+          padding: 12,
+          cornerRadius: 6,
+          callbacks: { label: ctx => ctx.parsed.x + '% uninsured' }
+        }
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+          max: 45,
+          grid: { color: '#f0f0f0', drawBorder: false },
+          ticks: { font: { family: 'InterVariable', size: 11 }, color: '#999', callback: v => v + '%' }
+        },
+        y: {
+          grid: { display: false },
+          ticks: { font: { family: 'InterVariable', size: 12, weight: '500' }, color: '#0a0a0a' }
+        }
+      },
+      animation: { duration: 1200, easing: 'easeOutQuart' }
+    }
+  });
+
+  // ─── LIVE DATA ───
+  async function fetchLive() {
+    try {
+      const res = await fetch('https://api.census.gov/data/2022/acs/acs1/profile?get=DP03_0099PE,DP03_0128PE,DP02_0094PE&for=state:53');
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      const row = data[1];
+      document.getElementById('uninsured-rate').textContent = parseFloat(row[0]).toFixed(1) + '%';
+      document.getElementById('poverty-rate').textContent = parseFloat(row[1]).toFixed(1) + '%';
+      document.getElementById('foreign-born').textContent = parseFloat(row[2]).toFixed(1) + '%';
+      document.getElementById('live-status').textContent = 'Last fetched: ' + new Date().toLocaleString() + ' · US Census Bureau ACS 2022';
+    } catch {
+      document.getElementById('uninsured-rate').textContent = '6.2%';
+      document.getElementById('poverty-rate').textContent = '10.4%';
+      document.getElementById('foreign-born').textContent = '15.3%';
+      document.getElementById('live-status').textContent = 'ACS 2022 estimates · US Census Bureau · Updated annually';
+    }
+  }
+  fetchLive();
+});
+</script>
+</body>
+</html>

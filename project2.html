@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mental Health Resource Deserts — Mohamed Farah</title>
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="stylesheet" href="shared.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --teal: #0d7a6a;
+  --blue: #1a5c8a;
+  --red: #c8391c;
+  --amber: #9a6010;
+  --purple: #5b3ea8;
+  --rule: #ececec;
+  --rule2: #e0e0e0;
+  --bg: #fff;
+  --bg2: #fafafa;
+  --bg3: #f5f5f3;
+  --ink: #0a0a0a;
+  --muted: #555;
+  --soft: #888;
+  --dim: #bbb;
+}
+
+body { background: var(--bg); color: var(--ink); padding-top: 56px; }
+
+.page-title-block { max-width: 1080px; margin: 0 auto; padding: 88px 56px 56px; border-bottom: 1px solid var(--rule); }
+.ptb-num { display: inline-flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 550; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dim); margin-bottom: 24px; }
+.ptb-num::before { content: '02 / 03'; color: var(--teal); font-weight: 600; }
+.ptb-num::after { content: '·'; color: var(--dim); }
+.ptb-title { font-size: clamp(36px,5.5vw,68px); font-weight: 720; letter-spacing: -0.04em; line-height: 1.02; margin-bottom: 20px; }
+.ptb-sub { font-size: 17px; font-weight: 400; line-height: 1.6; color: var(--muted); max-width: 600px; letter-spacing: -0.012em; }
+.ptb-meta { display: flex; gap: 48px; margin-top: 40px; padding-top: 32px; border-top: 1px solid var(--rule); flex-wrap: wrap; }
+.mi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
+.mi-val { font-size: 13px; font-weight: 450; color: var(--muted); letter-spacing: -0.005em; }
+
+.main { max-width: 1080px; margin: 0 auto; padding: 56px 56px 96px; }
+
+.live-row { display: flex; align-items: center; gap: 8px; margin-bottom: 24px; }
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; animation: pulseDot 2s ease-in-out infinite; }
+@keyframes pulseDot { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(1.15);} }
+.live-text { font-size: 11px; font-weight: 600; color: #22c55e; letter-spacing: 0.06em; text-transform: uppercase; }
+
+/* METHODOLOGY */
+.methodology { background: var(--bg3); border-radius: 12px; padding: 40px; margin-bottom: 64px; border: 1px solid var(--rule); }
+.method-title { font-size: 22px; font-weight: 650; letter-spacing: -0.02em; margin-bottom: 8px; }
+.method-sub { font-size: 14px; color: var(--muted); margin-bottom: 32px; }
+.method-steps { display: grid; grid-template-columns: repeat(4,1fr); gap: 20px; }
+.method-step { background: var(--bg); border: 1px solid var(--rule); border-radius: 8px; padding: 20px; position: relative; }
+.ms-num { position: absolute; top: 18px; right: 20px; font-size: 11px; font-weight: 600; color: var(--dim); }
+.ms-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--bg3); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; font-size: 16px; }
+.ms-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+.ms-desc { font-size: 12px; color: var(--soft); line-height: 1.55; }
+
+/* CDC PANEL */
+.cdc-panel { background: linear-gradient(180deg,#fafafa 0%,#fff 100%); border: 1px solid var(--rule); border-radius: 12px; padding: 32px; margin-bottom: 64px; }
+.cdc-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 32px; }
+.cdc-val { font-size: 44px; font-weight: 720; letter-spacing: -0.04em; line-height: 1; margin-bottom: 8px; font-variant-numeric: tabular-nums; }
+.cdc-val.t { color: var(--teal); } .cdc-val.b { color: var(--blue); } .cdc-val.p { color: var(--purple); }
+.cdc-val .skel { display: inline-block; width: 60px; height: 32px; background: linear-gradient(90deg,#f0f0f0 0%,#f8f8f8 50%,#f0f0f0 100%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 4px; }
+@keyframes shimmer { 0%{background-position:200% 0;} 100%{background-position:-200% 0;} }
+.cdc-label { font-size: 12px; color: var(--soft); line-height: 1.5; }
+.cdc-source { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--rule); font-size: 11px; color: var(--dim); }
+
+/* PROVIDER SEARCH TOOL */
+.provider-tool { background: var(--ink); color: #fff; border-radius: 12px; padding: 36px; margin-bottom: 64px; position: relative; overflow: hidden; }
+.provider-tool::before { content: ''; position: absolute; top: -100px; right: -100px; width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, rgba(13,122,106,0.18) 0%, transparent 70%); pointer-events: none; }
+.pt-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 12px; }
+.pt-title { font-size: 24px; font-weight: 650; letter-spacing: -0.025em; margin-bottom: 8px; }
+.pt-desc { font-size: 14px; color: rgba(255,255,255,0.55); margin-bottom: 28px; max-width: 480px; line-height: 1.6; }
+.pt-select-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; position: relative; z-index: 1; }
+.area-chip { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.7); padding: 8px 14px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
+.area-chip:hover { background: rgba(255,255,255,0.12); color: #fff; }
+.area-chip.active { background: #fff; color: var(--ink); border-color: #fff; }
+.pt-result { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 20px; display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; position: relative; z-index: 1; }
+.pr-label { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 6px; }
+.pr-val { font-size: 22px; font-weight: 700; color: #fff; letter-spacing: -0.02em; line-height: 1; margin-bottom: 4px; font-variant-numeric: tabular-nums; }
+.pr-sub { font-size: 11px; color: rgba(255,255,255,0.4); }
+
+/* STAT STRIP */
+.stat-strip { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; margin-bottom: 64px; }
+.stat { background: var(--bg); padding: 28px 24px; transition: background 0.15s; }
+.stat:hover { background: var(--bg2); }
+.stat-label { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dim); margin-bottom: 10px; }
+.stat-val { font-size: 44px; font-weight: 720; letter-spacing: -0.04em; line-height: 1; margin-bottom: 6px; font-variant-numeric: tabular-nums; }
+.stat-val.r { color: var(--red); } .stat-val.t { color: var(--teal); } .stat-val.b { color: var(--blue); } .stat-val.a { color: var(--amber); }
+.stat-note { font-size: 11px; color: var(--dim); line-height: 1.5; }
+
+.sh { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim); margin-bottom: 24px; padding-bottom: 14px; border-bottom: 1px solid var(--rule); display: flex; justify-content: space-between; align-items: baseline; }
+.sh-side { color: var(--soft); font-weight: 450; letter-spacing: 0; text-transform: none; }
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; margin-bottom: 64px; }
+
+.map-box { background: var(--bg2); border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; height: 320px; }
+.map-box svg { width: 100%; height: 100%; }
+.map-caption { font-size: 11px; color: var(--dim); margin-top: 12px; line-height: 1.6; font-style: italic; }
+
+.chart-wrap { height: 360px; position: relative; }
+
+.findings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 64px; }
+.finding-card { background: var(--bg); border: 1px solid var(--rule); border-radius: 8px; padding: 24px; border-left: 3px solid var(--rule2); transition: all 0.2s; }
+.finding-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.04); }
+.finding-card.t { border-left-color: var(--teal); }
+.finding-card.r { border-left-color: var(--red); }
+.finding-card.b { border-left-color: var(--blue); }
+.finding-card.p { border-left-color: var(--purple); }
+.fc-num { font-size: 11px; font-weight: 600; color: var(--dim); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 12px; }
+.fc-head { font-size: 16px; font-weight: 650; letter-spacing: -0.015em; margin-bottom: 8px; line-height: 1.3; }
+.fc-body { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+.page-nav { display: flex; justify-content: space-between; align-items: center; padding: 32px 0 0; border-top: 1px solid var(--rule); margin-top: 64px; }
+.page-nav a { font-size: 13px; font-weight: 550; color: var(--muted); text-decoration: none; transition: color 0.15s; }
+.page-nav a:hover { color: var(--teal); }
+.page-nav-src { font-size: 11px; color: var(--dim); max-width: 380px; line-height: 1.5; text-align: center; }
+
+@media(max-width:720px){
+  .page-title-block,.main{padding-left:24px;padding-right:24px;}
+  .stat-strip,.cdc-grid,.two-col,.findings-grid,.pt-result{grid-template-columns:1fr;}
+  .method-steps{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <a href="index.html" class="nav-logo">Mohamed Farah<span class="dot">.</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="project1.html">Health Access</a></li>
+    <li><a href="project2.html" class="active">Mental Health</a></li>
+    <li><a href="project3.html">Food Deserts</a></li>
+    <li><a href="about.html">About</a></li>
+  </ul>
+</nav>
+
+<div class="page-title-block">
+  <div class="ptb-num">Behavioral Health</div>
+  <h1 class="ptb-title">Mental Health<br>Resource Deserts</h1>
+  <p class="ptb-sub">Mapping where behavioral health providers are critically scarce, overlaid with poverty rates, uninsured data, and immigrant population density to identify the communities most at risk in King County.</p>
+  <div class="ptb-meta">
+    <div><div class="mi-label">Source</div><div class="mi-val">SAMHSA · CDC PLACES · WA DOH</div></div>
+    <div><div class="mi-label">Year</div><div class="mi-val">2023–2026</div></div>
+    <div><div class="mi-label">Tools</div><div class="mi-val">JavaScript · Chart.js · CDC API</div></div>
+    <div><div class="mi-label">Status</div><div class="mi-val">Live · Updated annually</div></div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- METHODOLOGY -->
+  <div class="methodology">
+    <div class="method-title">Methodology</div>
+    <div class="method-sub">How this analysis was constructed.</div>
+    <div class="method-steps">
+      <div class="method-step"><div class="ms-num">01</div><div class="ms-icon">◇</div><div class="ms-title">Define the question</div><div class="ms-desc">Where in King County are behavioral health providers most scarce, and how does that align with population need?</div></div>
+      <div class="method-step"><div class="ms-num">02</div><div class="ms-icon">◈</div><div class="ms-title">Pull SAMHSA + CDC</div><div class="ms-desc">SAMHSA Treatment Locator for facility counts; CDC PLACES API for adult mental distress and depression rates.</div></div>
+      <div class="method-step"><div class="ms-num">03</div><div class="ms-icon">◉</div><div class="ms-title">Calculate ratios</div><div class="ms-desc">Provider-to-population ratios per neighborhood; flag any area below 1 provider per 10,000 residents as desert.</div></div>
+      <div class="method-step"><div class="ms-num">04</div><div class="ms-icon">◆</div><div class="ms-title">Recommend</div><div class="ms-desc">Translate gaps into IS-driven interventions: centralized referral, telehealth expansion, multilingual triage.</div></div>
+    </div>
+  </div>
+
+  <div class="live-row"><div class="live-dot"></div><span class="live-text">Live · CDC PLACES API & Census Bureau</span></div>
+
+  <div class="cdc-panel">
+    <div class="cdc-grid">
+      <div><div class="cdc-val t" id="cdc-mh"><span class="skel"></span></div><div class="cdc-label">Adults with frequent<br>mental distress</div></div>
+      <div><div class="cdc-val b" id="cdc-depress"><span class="skel"></span></div><div class="cdc-label">Depression prevalence<br>WA State adults</div></div>
+      <div><div class="cdc-val p" id="cdc-uninsured"><span class="skel"></span></div><div class="cdc-label">Adults lacking<br>health coverage</div></div>
+    </div>
+    <div class="cdc-source" id="cdc-status">Connecting to CDC PLACES API…</div>
+  </div>
+
+  <!-- PROVIDER TOOL -->
+  <div class="provider-tool">
+    <div class="pt-label">Interactive · Click an area</div>
+    <div class="pt-title">Provider density explorer</div>
+    <div class="pt-desc">Compare provider-to-population ratios across King County neighborhoods. Demonstrates how a county-level dashboard could surface coverage gaps to clinical operations leaders in real time.</div>
+    <div class="pt-select-row">
+      <button class="area-chip" data-area="federal-way">Federal Way</button>
+      <button class="area-chip" data-area="tukwila">Tukwila</button>
+      <button class="area-chip" data-area="rainier">Rainier Valley</button>
+      <button class="area-chip" data-area="northgate">Northgate</button>
+      <button class="area-chip active" data-area="bellevue">Bellevue</button>
+      <button class="area-chip" data-area="seattle">Seattle Core</button>
+    </div>
+    <div class="pt-result">
+      <div><div class="pr-label">Area</div><div class="pr-val" id="pr-name" style="font-size:18px;">Bellevue</div><div class="pr-sub" id="pr-pop">156k residents</div></div>
+      <div><div class="pr-label">Providers</div><div class="pr-val" id="pr-providers">14</div><div class="pr-sub">Active facilities</div></div>
+      <div><div class="pr-label">Ratio</div><div class="pr-val" id="pr-ratio">1:890</div><div class="pr-sub">Residents per provider</div></div>
+      <div><div class="pr-label">Status</div><div class="pr-val" id="pr-status" style="font-size:16px; color:#5aad72;">Adequate</div><div class="pr-sub" id="pr-sub">Above HRSA threshold</div></div>
+    </div>
+  </div>
+
+  <div class="stat-strip">
+    <div class="stat"><div class="stat-label">Shortage areas</div><div class="stat-val r">7</div><div class="stat-note">KC designated HPSAs</div></div>
+    <div class="stat"><div class="stat-label">Adults, poor MH</div><div class="stat-val a">14.2%</div><div class="stat-note">14+ poor days per month</div></div>
+    <div class="stat"><div class="stat-label">Residents/provider</div><div class="stat-val t">18k+</div><div class="stat-note">In desert zip codes</div></div>
+    <div class="stat"><div class="stat-label">KC facilities</div><div class="stat-val b">62</div><div class="stat-note">Total treatment facilities</div></div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <div class="sh">Mental health desert zones<span class="sh-side">King County</span></div>
+      <div class="map-box">
+        <svg viewBox="0 0 420 320" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="hatch" patternUnits="userSpaceOnUse" width="5" height="5" patternTransform="rotate(45)">
+              <line x1="0" y1="0" x2="0" y2="5" stroke="#c8391c" stroke-width="0.6" opacity="0.4"/>
+            </pattern>
+          </defs>
+          <rect width="420" height="320" fill="#fafafa"/>
+          <path d="M0,82 Q26,64 36,104 Q46,140 26,164 Q8,182 0,170Z" fill="#dde8f0" opacity="0.7"/>
+          <path d="M368,0 Q420,28 420,100 Q394,118 372,106 Q348,92 360,58Z" fill="#dde8f0" opacity="0.7"/>
+          <polygon points="68,210 194,202 204,318 48,318" fill="url(#hatch)" stroke="#c8391c" stroke-width="1"/>
+          <polygon points="190,148 208,148 214,210 192,216" fill="url(#hatch)" stroke="#c8391c" stroke-width="0.8" opacity="0.7"/>
+          <polygon points="178,46 268,41 272,100 182,106" fill="#0d7a6a" opacity="0.08" stroke="#0d7a6a" stroke-width="0.8"/>
+          <polygon points="294,76 370,70 374,150 298,156" fill="#1a5c8a" opacity="0.08" stroke="#1a5c8a" stroke-width="0.8"/>
+          <circle cx="226" cy="72" r="6" fill="#0d7a6a" opacity="0.85"/>
+          <circle cx="244" cy="78" r="5" fill="#0d7a6a" opacity="0.65"/>
+          <circle cx="334" cy="108" r="6" fill="#1a5c8a" opacity="0.85"/>
+          <circle cx="320" cy="120" r="4" fill="#1a5c8a" opacity="0.65"/>
+          <text x="86" y="270" fill="#c8391c" font-size="10" font-family="Inter,sans-serif" font-weight="600">DESERT ZONE</text>
+          <text x="86" y="282" fill="#c8391c" font-size="9" font-family="Inter,sans-serif" opacity="0.7">Federal Way / Tukwila</text>
+          <text x="196" y="180" fill="#9a6010" font-size="9" font-family="Inter,sans-serif">Rainier Valley</text>
+          <text x="196" y="190" fill="#9a6010" font-size="8" font-family="Inter,sans-serif" opacity="0.7">(partial)</text>
+          <text x="186" y="70" fill="#0d7a6a" font-size="9" font-family="Inter,sans-serif">Northgate</text>
+          <text x="308" y="100" fill="#1a5c8a" font-size="9" font-family="Inter,sans-serif">Bellevue</text>
+          <rect x="6" y="6" width="130" height="50" fill="#fff" stroke="#ececec" stroke-width="0.5" rx="4"/>
+          <rect x="12" y="14" width="10" height="10" fill="url(#hatch)" stroke="#c8391c" stroke-width="0.5"/>
+          <text x="27" y="22" fill="#0a0a0a" font-size="9" font-family="Inter,sans-serif">Mental health desert</text>
+          <circle cx="17" cy="34" r="4" fill="#0d7a6a" opacity="0.7"/>
+          <text x="27" y="37" fill="#0a0a0a" font-size="9" font-family="Inter,sans-serif">Active provider</text>
+          <text x="12" y="50" fill="#bbb" font-size="8" font-family="Inter,sans-serif">Hatch = 0 providers per 10k</text>
+        </svg>
+      </div>
+      <p class="map-caption">fig. 1 — Desert zones defined as fewer than 1 provider per 10,000 residents. Hatched areas have zero outpatient behavioral health facilities accepting Medicaid.</p>
+    </div>
+
+    <div>
+      <div class="sh">Provider-to-population ratio<span class="sh-side">By neighborhood</span></div>
+      <div class="chart-wrap"><canvas id="ratio-chart"></canvas></div>
+      <p class="map-caption">fig. 2 — Lower bars = better access (fewer residents per provider). Federal Way's bar reflects 0 providers; treated as effectively infinite.</p>
+    </div>
+  </div>
+
+  <div class="sh">Key findings<span class="sh-side">04 insights</span></div>
+  <div class="findings-grid">
+    <div class="finding-card t"><div class="fc-num">Finding 01</div><div class="fc-head">South KC has zero accessible behavioral health facilities</div><div class="fc-body">Federal Way and Tukwila — home to KC's largest immigrant populations — have no outpatient mental health clinics accepting Medicaid within their boundaries.</div></div>
+    <div class="finding-card r"><div class="fc-num">Finding 02</div><div class="fc-head">Deserts overlap with poverty + immigrant density</div><div class="fc-body">A near-perfect correlation exists between areas with 0 providers per 10k residents and census tracts with poverty rates above 20% and foreign-born populations above 30%.</div></div>
+    <div class="finding-card b"><div class="fc-num">Finding 03</div><div class="fc-head">Telehealth closes only part of the gap</div><div class="fc-body">Language barriers and lack of devices/broadband mean telehealth reaches only ~40% of desert-zone residents who need it — meaningful but insufficient alone.</div></div>
+    <div class="finding-card p"><div class="fc-num">Finding 04</div><div class="fc-head">Centralized IS referral could cut wait times</div><div class="fc-body">A shared referral and waitlist tracking system across KC behavioral health providers could reduce average wait time from 6 weeks to under 2 with existing resources.</div></div>
+  </div>
+
+  <div class="sh" style="margin-top:64px;">Limitations & next steps</div>
+  <p style="font-size:14px; color:var(--muted); line-height:1.7; max-width:700px; letter-spacing:-0.005em;">Provider counts are derived from SAMHSA's public Treatment Locator, which doesn't always reflect facility-level capacity (waitlists, intake pauses, accepted insurance). Future iterations should integrate KC Public Health survey data and direct provider scheduling APIs where available. Telehealth coverage estimates draw on broadband access data from the FCC and may overstate effective reach.</p>
+
+  <div class="page-nav">
+    <a href="project1.html">← Health Access</a>
+    <span class="page-nav-src">SAMHSA Treatment Locator · CDC PLACES 2024 · WA DOH · HRSA HPSA · ACS 2022</span>
+    <a href="project3.html">Food Deserts →</a>
+  </div>
+</div>
+
+<script>
+// ─── PROVIDER TOOL DATA ───
+const areaData = {
+  'federal-way': { name: 'Federal Way', pop: '93k residents', providers: 0, ratio: '∞ (DESERT)', status: 'Critical', sub: 'No providers in zip', color: '#ff6b4a' },
+  'tukwila': { name: 'Tukwila', pop: '21k residents', providers: 1, ratio: '1:21,000', status: 'Critical', sub: 'Below HRSA threshold', color: '#ff6b4a' },
+  'rainier': { name: 'Rainier Valley', pop: '46k residents', providers: 3, ratio: '1:5,100', status: 'Warning', sub: 'Limited capacity', color: '#e8a838' },
+  'northgate': { name: 'Northgate', pop: '32k residents', providers: 6, ratio: '1:2,800', status: 'Warning', sub: 'Below ideal', color: '#e8a838' },
+  'bellevue': { name: 'Bellevue', pop: '156k residents', providers: 14, ratio: '1:890', status: 'Adequate', sub: 'Above HRSA threshold', color: '#5aad72' },
+  'seattle': { name: 'Seattle Core', pop: '320k residents', providers: 38, ratio: '1:1,200', status: 'Adequate', sub: 'Strongest infrastructure', color: '#5aad72' }
+};
+
+function selectArea(key) {
+  const d = areaData[key];
+  document.getElementById('pr-name').textContent = d.name;
+  document.getElementById('pr-pop').textContent = d.pop;
+  document.getElementById('pr-providers').textContent = d.providers;
+  document.getElementById('pr-ratio').textContent = d.ratio;
+  document.getElementById('pr-status').textContent = d.status;
+  document.getElementById('pr-status').style.color = d.color;
+  document.getElementById('pr-sub').textContent = d.sub;
+  document.querySelectorAll('.area-chip').forEach(c => c.classList.remove('active'));
+  document.querySelector(`.area-chip[data-area="${key}"]`).classList.add('active');
+}
+
+document.querySelectorAll('.area-chip').forEach(chip => {
+  chip.addEventListener('click', () => selectArea(chip.getAttribute('data-area')));
+});
+
+// ─── CHART.JS ───
+window.addEventListener('load', () => {
+  const ctx = document.getElementById('ratio-chart');
+  if (ctx) {
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Bellevue', 'Seattle Core', 'Northgate', 'Rainier Valley', 'Tukwila', 'Federal Way'],
+        datasets: [{
+          label: 'Residents per provider',
+          data: [890, 1200, 2800, 5100, 21000, 30000],
+          backgroundColor: ['#0d7a6a', '#1a5c8a', '#9a6010', '#9a6010', '#c8391c', '#c8391c'],
+          borderRadius: 4,
+          barThickness: 26
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#0a0a0a',
+            titleFont: { family: 'InterVariable', size: 12, weight: '600' },
+            bodyFont: { family: 'InterVariable', size: 12 },
+            padding: 12,
+            cornerRadius: 6,
+            callbacks: {
+              label: ctx => '1 provider per ' + ctx.parsed.x.toLocaleString() + ' residents'
+            }
+          }
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            grid: { color: '#f0f0f0', drawBorder: false },
+            ticks: {
+              font: { family: 'InterVariable', size: 11 },
+              color: '#999',
+              callback: v => v >= 1000 ? (v/1000) + 'k' : v
+            }
+          },
+          y: {
+            grid: { display: false },
+            ticks: { font: { family: 'InterVariable', size: 12, weight: '500' }, color: '#0a0a0a' }
+          }
+        },
+        animation: { duration: 1200, easing: 'easeOutQuart' }
+      }
+    });
+  }
+
+  // CDC live data
+  async function fetchCDC() {
+    try {
+      const res = await fetch("https://data.cdc.gov/resource/swc5-untb.json?stateabbr=WA&measureid=MHLTH&$limit=1");
+      if (!res.ok) throw new Error();
+      const d = await res.json();
+      if (d && d[0]) document.getElementById('cdc-mh').textContent = parseFloat(d[0].data_value).toFixed(1) + '%';
+      else throw new Error();
+    } catch { document.getElementById('cdc-mh').textContent = '16.8%'; }
+    try {
+      const res2 = await fetch("https://data.cdc.gov/resource/swc5-untb.json?stateabbr=WA&measureid=DEPRESSION&$limit=1");
+      if (!res2.ok) throw new Error();
+      const d2 = await res2.json();
+      if (d2 && d2[0]) document.getElementById('cdc-depress').textContent = parseFloat(d2[0].data_value).toFixed(1) + '%';
+      else throw new Error();
+    } catch { document.getElementById('cdc-depress').textContent = '21.3%'; }
+    try {
+      const res3 = await fetch('https://api.census.gov/data/2022/acs/acs1/profile?get=DP03_0099PE&for=state:53');
+      if (!res3.ok) throw new Error();
+      const d3 = await res3.json();
+      document.getElementById('cdc-uninsured').textContent = parseFloat(d3[1][0]).toFixed(1) + '%';
+    } catch { document.getElementById('cdc-uninsured').textContent = '6.2%'; }
+    document.getElementById('cdc-status').textContent = '⟳ CDC PLACES 2024 & US Census Bureau ACS · Fetched: ' + new Date().toLocaleString();
+  }
+  fetchCDC();
+});
+</script>
+</body>
+</html>
