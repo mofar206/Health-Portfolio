@@ -1,0 +1,60 @@
+{
+  "transit": [
+    {
+      "anchor": "Skyway",
+      "tuesday": 132,
+      "sunday": 134,
+      "changePercent": 1.5
+    },
+    {
+      "anchor": "White Center",
+      "tuesday": 276,
+      "sunday": 200,
+      "changePercent": -27.5
+    },
+    {
+      "anchor": "Burien",
+      "tuesday": 814,
+      "sunday": 631,
+      "changePercent": -22.5
+    },
+    {
+      "anchor": "Tukwila",
+      "tuesday": 622,
+      "sunday": 484,
+      "changePercent": -22.2
+    },
+    {
+      "anchor": "SeaTac",
+      "tuesday": 322,
+      "sunday": 282,
+      "changePercent": -12.4
+    },
+    {
+      "anchor": "Renton",
+      "tuesday": 1051,
+      "sunday": 695,
+      "changePercent": -33.9
+    },
+    {
+      "anchor": "Kent",
+      "tuesday": 729,
+      "sunday": 529,
+      "changePercent": -27.4
+    },
+    {
+      "anchor": "Auburn",
+      "tuesday": 387,
+      "sunday": 199,
+      "changePercent": -48.6
+    }
+  ],
+  "permits": {
+    "records": 2983,
+    "validIntervals": 2704,
+    "medianDays": 0.0,
+    "sameDayIntervals": 1832,
+    "buildingValidIntervals": 544,
+    "buildingMedianDays": 54.0
+  }
+}
