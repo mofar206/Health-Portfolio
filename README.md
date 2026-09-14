@@ -1,41 +1,51 @@
-# Health Equity Portfolio · Mohamed Farah
+# Mohamed Farah · Data, product & community
 
-A five-page interactive portfolio exploring healthcare access, behavioral health facilities, and food access in King County, Washington.
+Three interactive projects rooted in South King County, built with static HTML, CSS, JavaScript, Python, and SQL. The portfolio also includes UW Informatics education and professional experience.
 
-## Explore
+| Project | Working product | Evidence |
+|---|---|---|
+| Health, in context | Healthcare, mental health and food-access explorers | CDC county indicators; original neighborhood scenarios explicitly labeled illustrative |
+| South County, connected | Eight-anchor bus schedule comparison, day/time filters and route-direction intervals | Official Metro GTFS Fall 2026 feed; 1,107,809 stop-time rows scanned |
+| Permit Pulse | Search, status/type/year filters, record milestones, hypothetical review markers and CSV export | 2,983 distinct records from Renton's active permit layer, retrieved September 14, 2026 UTC |
 
-- **Healthcare access:** ZIP lookup across the original neighborhood scenario dataset and comparative insurance bars.
-- **Mental health:** six facility scenarios with population-to-facility ratios calculated from their inputs. Zero facilities produces an undefined ratio, not an invented value.
-- **Food access:** six neighborhoods can be compared in either selector. Percentage differences use percentage points.
-- **Public context:** CDC PLACES county estimates, observation years, crude prevalence, and confidence intervals are requested separately from neighborhood scenarios.
+## Run
 
-## Run locally
+No build step or account credentials required. Serve `dist/` in the Sites checkout, or the repository root in the GitHub Pages layout:
 
-The site uses static HTML, CSS, and JavaScript, with no build dependencies. Serve the directory containing `index.html` with any static HTTP server. For this Sites checkout, that directory is `dist/`; on the GitHub branch, the same files are at the repository root.
+```sh
+python3 -m http.server 4175
+```
 
-## Data provenance
+Open the local server in a browser. Data snapshots are checked in; external fonts have system fallbacks. The health project fetches public indicators separately and reports source errors without replacing them with fabricated data.
 
-The original neighborhood records lack row-level citations and extraction artifacts. They are preserved and explicitly labeled **illustrative**, not presented as official findings, validated estimates, or current care availability. The portfolio does not make USDA food-access or HRSA shortage designations.
+## Data pipeline
 
-CDC requests filter `locationid=53033`, the desired measure, and `datavaluetypeid=CrdPrv`. The app checks values and geography, shows the returned observation year, and does not silently substitute mock values if a source fails.
+`analysis/build_data.py` uses the Python standard library. Download [Metro's official GTFS archive](https://metro.kingcounty.gov/GTFS/google_transit.zip) to a raw directory as `metro.zip`, then run:
 
-Supplemental Census requests use ACS 2022 profile data for Washington state 53, King County 033. During validation, the Census API returned a key-required page. The interface reports that limitation explicitly. A future authenticated integration should keep credentials server-side; do not put a private API key into this public repository.
+```sh
+python3 analysis/build_data.py --raw-dir /path/to/raw
+python3 analysis/validate.py
+```
 
-Sources:
+The builder applies GTFS service calendars and exceptions, excludes no-pickup events, and keeps one trip event per anchor. The fixed example dates must fall inside the feed's coverage; update dates deliberately for a new feed. Metro source zip and Renton response hashes, retrieval times and methods are recorded in the processed JSON. Keep raw archives privately if exact reconstruction is required; official endpoints change over time.
 
-- [Original portfolio revision](https://github.com/mofar206/Health-Portfolio/tree/b8cee6183288813f5af19f90b4ce088ed26a0b73)
-- [CDC PLACES county data](https://data.cdc.gov/resource/swc5-untb.json?locationid=53033&datavaluetypeid=CrdPrv)
-- [ACS 2022 profile documentation](https://api.census.gov/data/2022/acs/acs1/profile.html)
-- [USDA Food Access Research Atlas documentation](https://www.ers.usda.gov/data-products/food-access-research-atlas/documentation)
+Renton extraction first lists every object ID, fetches bounded batches, reconciles parcel rows by permit ID and checks date order. It uses no applicant/owner names or addresses. `analysis/queries.sql` documents status, application cohort, and interval queries; the builder executes a SQLite status reconciliation.
 
-## Design and accessibility
+## Interpretation
 
-Responsive layouts, semantic navigation, native form controls, visible keyboard focus, polite result announcements, reduced-motion support, and explicit loading, missing-record, and source-error states. System font fallbacks preserve readability if externally hosted fonts are unavailable.
+- Transit counts describe selected stop groups, not whole cities. Group sizes differ. Scheduled intervals do not establish real wait times, reliability or equitable access.
+- The Renton active layer is not a complete application history. Issued is not completed. Application-to-issue calendar days are not staff processing time. The adjustable age marker is a prototype review cue, not an official deadline.
+- Health neighborhood values inherited from the original portfolio lack row-level evidence and remain illustrative. CDC PLACES county indicators are distinguished from those scenarios.
+- These are independent portfolio projects, not agency products. No user interviews, employer impact, operational savings, or community outcomes are claimed without measurement.
 
 ## Validation
 
-Checked JavaScript syntax; all five HTML routes and local assets; link fragments, unique IDs, and form labels; every neighborhood scenario; calculated ratios and zero-denominator handling; comparison differences; invalid values; and current CDC response contracts. Browser visual and interaction testing has not been performed.
+Offline checks reconcile permit counts/statuses and date intervals, validate transit references/geography and check local page/asset links. Browser checks cover transit loading, permit search, record dialogs and empty results. Native controls, visible focus, responsive layouts, and reduced-motion support are included. Further user and assistive-technology testing remains future work.
 
-## Next research milestone
+## Sources
 
-Replace scenario records with a reproducible, geography-aligned dataset. Include source URLs and vintages per record, uncertainty, extraction scripts, and measured validation. Do not claim project impact or health outcomes before they have been evaluated.
+- [King County Metro developer resources](https://kingcounty.gov/en/dept/metro/rider-tools/mobile-and-web-apps)
+- [Renton Permit Case Parcels — Active](https://gismaps.rentonwa.gov/as03/rest/services/Operational/PermitsAndConstruction/MapServer/41)
+- [CDC PLACES county data](https://data.cdc.gov/resource/swc5-untb.json?locationid=53033&datavaluetypeid=CrdPrv)
+
+Transit scheduling, geographic, and real-time data provided by permission of King County
