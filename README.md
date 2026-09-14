@@ -1,4 +1,4 @@
-# Mohamed Farah · Data, product & community
+# mfPortfolio206 · Product, data & community
 
 Three interactive projects rooted in South King County, built with static HTML, CSS, JavaScript, Python, and SQL. The portfolio also includes UW Informatics education and professional experience.
 
@@ -45,7 +45,13 @@ Offline checks reconcile permit counts/statuses and date intervals, validate tra
 ## Sources
 
 - [King County Metro developer resources](https://kingcounty.gov/en/dept/metro/rider-tools/mobile-and-web-apps)
-- [Renton Permit Case Parcels — Active](https://gismaps.rentonwa.gov/as03/rest/services/Operational/PermitsAndConstruction/MapServer/41)
+- [Renton Permit Case Parcels (Active)](https://gismaps.rentonwa.gov/as03/rest/services/Operational/PermitsAndConstruction/MapServer/41)
 - [CDC PLACES county data](https://data.cdc.gov/resource/swc5-untb.json?locationid=53033&datavaluetypeid=CrdPrv)
 
 Transit scheduling, geographic, and real-time data provided by permission of King County
+
+## Reproduce the case-study findings
+
+Run `python3 analysis/report_findings.py` to calculate the figures displayed in the transit and permit case studies and write `datasets/findings.json` (under `dist/` in the Sites checkout). The script checks same-anchor weekday/weekend counts and valid permit intervals.
+
+The case studies connect those results to recommendations, requirements, tradeoffs, and a proposed evaluation plan. Planned research is explicitly distinguished from completed analysis.
